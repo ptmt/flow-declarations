@@ -1,0 +1,30 @@
+{
+  "name": "flow-declarations",
+  "version": "1.0.0",
+  "description": "internal typed declarations for facebook-flow",
+  "main": "test/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "test/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/unknownexception/flow-declarations.git"
+  },
+  "keywords": [
+    "flowtype"
+  ],
+  "author": "Dmitriy Loktev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/unknownexception/flow-declarations/issues"
+  },
+  "homepage": "https://github.com/unknownexception/flow-declarations",
+  "dependencies": {
+    "cli": "^0.6.5",
+    "flow-bin": "^0.1.2",
+    "webidl2": "^2.0.7"
+  }
+}
