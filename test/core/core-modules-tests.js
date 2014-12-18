@@ -1,12 +1,14 @@
 /* @flow */
-declare module "nodejs" {
-  declare class A {
 
-  }
+declare module "nodejs" {
+  declare class A {}
 }
 
 declare module "B" {
-  declare class B extends nodejs$A {}
+  declare module "inner" {
+    import a = require("nodejs");
+    declare class B extends a.A implements NodeJS.Stream {}
+  }
 }
 // var assert = require('assert');
 // var A = [1, 2];
