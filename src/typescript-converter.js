@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 require('cli').withStdinLines(function(lines, newline) {
-  var converters = [convertClassToInterface
+  var converters = [
+      convertClassToInterface
     , convertInherKeyword
     , convertExportKeyword
     , convertKeywordsWithoutDeclare
     , convertExtendsImplements
     , convertContructorSignature
+    , convertFunctionsArray
+    , convertUntypedArguments
     , convertGenerics
     , convertOptionalMethods
     , extractInternamModules
@@ -15,10 +18,6 @@ require('cli').withStdinLines(function(lines, newline) {
   });
   this.output(lines.join(newline));
 });
-
-function replace(str, pattern, to) {
-  return str.replace()
-}
 
 /*
  * Replaces 'interface' with 'class'
@@ -120,15 +119,17 @@ function convertExtendsImplements(lines) {
 }
 
 /*
-* Adds void type to constructor
+* Adds void type to constructor and other methods
 * like this:
 * class SomeClass {
 *   constructor();
 * }
+* declare function f();
 * =>
 * class SomeClass {
 *   constructor(): void;
 * }
+* declare function f(): void;
 */
 function convertContructorSignature(lines) {
   var flag = false; // very bad workaround until grammar parser will be ready
@@ -142,11 +143,57 @@ function convertContructorSignature(lines) {
         flag = true;
       }
     }
+    var withoutSignature = line.match(/\((.*)\);/g);
+    if (withoutSignature && withoutSignature.length > 0) {
+      line = line.slice(0,-1);
+      line += ': void;';
+    };
     return line;
-  })
+  });
   return lines;
 }
 
+/*
+* Adds void type to constructor and other methods
+* like this:
+* class SomeClass {
+*   listeners(event: string): { Function; }[];
+* }
+* =>
+* class SomeClass {
+*   listeners(event: string): Array<Function>;
+* }
+*/
+function convertFunctionsArray(lines) {
+  lines = lines.map(function(line) {
+    if (line.indexOf('{ Function; }[]') > -1) {
+      line = line.replace('{ Function; }[]', 'Array<Function>');
+    }
+    return line;
+  });
+  return lines;
+}
+
+/*
+* Adds type any to untyped arguments
+* like this:
+* class SomeClass {
+*   func(a): void;
+* }
+* =>
+* class SomeClass {
+*   func(a: any): void;
+* }
+*/
+function convertUntypedArguments(lines) {
+  lines = lines.map(function(line) {
+    if (line.indexOf('result)') > -1) {
+      line = line.replace('result)', 'result: any)');
+    }
+    return line;
+  });
+  return lines;
+}
 
 /*
 * Simplify generics
@@ -161,7 +208,9 @@ function convertContructorSignature(lines) {
 */
 function convertGenerics(lines) {
   lines = lines.map(function(line) {
-    return line.replace(/<T extends (.*)>/, '<T>');
+    return line
+      .replace(/<T extends (.*)>/, '<T>')
+      .replace(/<U extends (.*)>/, '<U>');
   })
   return lines;
 }
@@ -179,7 +228,7 @@ function convertGenerics(lines) {
 */
 function convertOptionalMethods(lines) {
   lines = lines.map(function(line) {
-    return line.replace(/\?\(/, '(');
+    return line.replace(/\?.\(/, '(');
   })
   return lines;
 }

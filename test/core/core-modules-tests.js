@@ -5,13 +5,16 @@ declare module "nodejs" {
 }
 
 declare module "B" {
-  declare module "inner" {
-    import a = require("nodejs");
-    declare class B extends a.A implements NodeJS.Stream {}
-  }
+  // declare module "inner" {
+  //   import a = require("nodejs");
+  //   declare class B extends a.A implements NodeJS.Stream {}
+    declare class C {
+      func(): { D: string; E: number };
+    }
+//  }
 }
-// var assert = require('assert');
-// var A = [1, 2];
-// var b = 1;
-//
-// assert.equal(A.indexOf(b), 0);
+var assert = require('assert');
+var A = [1, 2];
+var b = 1;
+
+assert.equal(A.indexOf(b), 0);
