@@ -12,7 +12,7 @@ Try to convert Typescript declarations into Flow format:
 npm run generate
 ```
 
-Try to run tests:
+Try to run tests (this requires Flow version which supports `--no-flowlib` option):
 
 ```
 npm run test
