@@ -24,12 +24,12 @@
   "homepage": "https://github.com/unknownexception/flow-declarations",
   "dependencies": {
     "cli": "^0.6.5",
-    "flow-bin": "^0.1.2",
+    "flow-bin": "*",
     "webidl2": "^2.0.7"
   },
   "scripts": {
     "generate": "./generate.sh",
     "test-dev": "npm run generate && ../flow/bin/flow check test/node --no-flowlib --lib lib --all",
-    "test": "../flow/bin/flow check --no-flowlib --lib lib --all"
+    "test": "flow check --no-flowlib --lib lib --all"
   }
 }
