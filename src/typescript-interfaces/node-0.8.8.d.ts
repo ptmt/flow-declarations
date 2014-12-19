@@ -144,7 +144,7 @@ interface NodeProcess extends EventEmitter {
       };
     };
     kill(pid: number, signal?: string): void;
-    memoryUsage(): { rss: number; heapTotal; number; heapUsed: number; };
+    memoryUsage(): any;
     pid: number;
     title: stringd;
     arch: string;
@@ -590,7 +590,7 @@ declare module "url" {
         slashes: boolean;
     }
 
-    export function parse(urlStr: string, parseQueryString? , slashesDenoteHost? ): Url;
+    export function parse(urlStr: string, parseQueryString?:any , slashesDenoteHost?: any ): Url;
     export function format(url: Url): string;
     export function resolve(from: string, to: string): string;
 }
@@ -770,7 +770,7 @@ declare module "fs" {
     export function readFile(filename: string, callback: (err: Error, data: Buffer) => void ): void;
     export function readFileSync(filename: string): Buffer;
     export function readFileSync(filename: string, encoding: string): string;
-    export function writeFile(filename: string, data: any, callback?: (err) => void): void;
+    export function writeFile(filename: string, data: any, callback?: (err: any) => void): void;
     export function writeFile(filename: string, data: any, encoding?: string, callback?: (err) => void): void;
     export function writeFileSync(filename: string, data: any, encoding?: string): void;
     export function appendFile(filename: string, data: any, encoding?: string, callback?: Function): void;

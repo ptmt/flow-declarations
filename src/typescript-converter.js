@@ -1,4 +1,7 @@
-#!/usr/bin/env node
+/*
+* DISCLAIMER: I'm not proud of this. This could be achivied
+* using Typescript declaration files gramma parser & generator
+*/
 require('cli').withStdinLines(function(lines, newline) {
   var converters = [
       convertClassToInterface
@@ -11,8 +14,11 @@ require('cli').withStdinLines(function(lines, newline) {
     , convertUntypedArguments
     , convertGenerics
     , convertOptionalMethods
-    , extractInternamModules
-    , extractClassesInModules];
+    , extractInternalModules
+    , extractClassesInModules
+  //  , convertToUnionTypes
+    ];
+
   converters.forEach(function(f) {
     lines = f(lines);
   });
@@ -20,11 +26,12 @@ require('cli').withStdinLines(function(lines, newline) {
 });
 
 /*
- * Replaces 'interface' with 'class'
- * like this:
- * interface SomeInterface {}
- * =>
- * class SomeInterface {}
+   * Replaces 'interface' with 'class'
+   * like this:
+   *
+   * interface SomeInterface {}
+   * =>
+   * class SomeInterface {}
  */
 function convertClassToInterface(lines) {
   lines = lines.map(function(line) {
@@ -34,11 +41,11 @@ function convertClassToInterface(lines) {
 }
 
 /*
-* Replaces 'implements' with 'extends'
-* like this:
-* class SomeClass implements SomeInterface {}
-* =>
-* class SomeClass extends SomeInterface {}
+  * Replaces 'implements' with 'extends'
+  * like this:
+  * class SomeClass implements SomeInterface {}
+  * =>
+  * class SomeClass extends SomeInterface {}
 */
 function convertInherKeyword(lines) {
   lines = lines.map(function(line) {
@@ -48,15 +55,15 @@ function convertInherKeyword(lines) {
 }
 
 /*
-* Replaces 'implements' with 'extends'
-* like this:
-* class SomeClass {
-*   export var A: string;
-* }
-* =>
-* class SomeClass {
-*   declare var A: string;
-* }
+  * Replaces 'implements' with 'extends'
+  * like this:
+  * class SomeClass {
+  *   export var A: string;
+  * }
+  * =>
+  * class SomeClass {
+  *   declare var A: string;
+  * }
 */
 function convertExportKeyword(lines) {
   lines = lines.map(function(line) {
@@ -66,15 +73,15 @@ function convertExportKeyword(lines) {
 }
 
 /*
-* Replaces 'class' with 'declare class'
-* like this:
-* class SomeClass {
-*   declare var A: string;
-* }
-* =>
-* declare class SomeClass {
-*   declare var A: string;
-* }
+  * Replaces 'class' with 'declare class'
+  * like this:
+  * class SomeClass {
+  *   declare var A: string;
+  * }
+  * =>
+  * declare class SomeClass {
+  *   declare var A: string;
+  * }
 */
 function convertKeywordsWithoutDeclare(lines) {
   lines = lines.map(function(line) {
@@ -187,8 +194,9 @@ function convertFunctionsArray(lines) {
 */
 function convertUntypedArguments(lines) {
   lines = lines.map(function(line) {
-    if (line.indexOf('result)') > -1) {
-      line = line.replace('result)', 'result: any)');
+    if (line.match(/[\(,] *[\w\?]+\)/g)) {
+      var varWithoutType = /[\(,] *([\w\?]+)\)/g.exec(line);
+      line = line.replace(varWithoutType[1], varWithoutType[1] + ': any');
     }
     return line;
   });
@@ -210,7 +218,7 @@ function convertGenerics(lines) {
   lines = lines.map(function(line) {
     return line
       .replace(/<T extends (.*)>/, '<T>')
-      .replace(/<U extends (.*)>/, '<U>');
+      .replace(/<U extends (.*)>/, '<U>'); // TODO: more universal way
   })
   return lines;
 }
@@ -248,7 +256,7 @@ function convertOptionalMethods(lines) {
 *
 * }
 */
-function extractInternamModules(lines) {
+function extractInternalModules(lines) {
   var is_in_modules = false;
   var br = 0;
   var cut = -1;
@@ -286,7 +294,22 @@ function extractInternamModules(lines) {
 }
 
 /*
-** Extracts classes needed to be used at another modules
+  * Extracts classes needed to be used at another modules
+  * declare module A {
+  *   declare class SomeClass {}
+  * }
+  * declare module B {
+  *    import a = require('a');
+  *    class C extends a.SomeClass {}
+  * }
+  * =>
+  * declare module A {
+  *   declare class SomeClass {}
+  * }
+  * declare module B {
+  *    class C extends a$SomeClass {}
+  * }
+  * declare class a$SomeClass {}
 */
 function extractClassesInModules(lines) {
   var is_in_modules = false;
@@ -356,6 +379,59 @@ function extractClassesInModules(lines) {
 
 
   return lines;
+}
+
+/*
+  * Rewrites methods with union types whenever it's possible
+  *
+  * declare class A {
+  *   method1(a: number)
+  *   method1(a: string)
+  * }
+  * =>
+  * declare module A {
+  *   method1(a: number | string)
+  * }
+*/
+function convertToUnionTypes(lines) {
+  // TODO: real implementation
+  var methodNames = {};
+  var is_in_module = false;
+  var br = 0;
+  function checkIfInModule(line) {
+    if (line.indexOf('module ') > -1) {
+      is_in_module = true;
+    }
+    if (line.indexOf('{') > -1) {
+      br++;
+    }
+    if (line.indexOf('}') > -1) {
+      br--;
+      if (br === 0) {
+        is_in_module = false;
+      }
+    }
+  }
+  lines = lines.map(function(line) {
+    checkIfInModule(line);
+    if (is_in_module) {
+      var rx = new RegExp(/(\w*)\(.*\)/);
+      var method = rx.exec(line);
+      if (method && method[1]) {
+        if (methodNames[method[1]]) {
+          return '';
+        }
+        methodNames[method[1]] = true;
+      }
+    } else {
+      console.error(methodNames);
+      methodNames = {};
+    }
+    return line;
+  });
+
+  return lines;
+
 }
 
 function searchByPattern(lines, pattern) {

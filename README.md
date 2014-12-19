@@ -1,14 +1,13 @@
 flow-declarations
 =================
 
-This repository trying to solve the main problem of declarations of https://github.com/facebook/flow.
+The tests and converters for https://github.com/facebook/flow declarations.
 
 ```
 npm run generate
 
 npm run test
 ```
-
 
 ## Todo
 

@@ -33,7 +33,7 @@ global.process.stdout.write = function(string) {
 };
 console._stderr = process.stdout;
 
-var tests = [
+var tests: Array<{input:string|number, output: string}> = [
   {input: 'foo', output: 'foo'},
   {input: undefined, output: 'undefined'},
   {input: null, output: 'null'},
