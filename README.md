@@ -19,8 +19,9 @@ npm run test
 ```
 ## Tests
 
-Node tests - github.com/joyent/node
-Mozilla tests -
+Node tests source is github.com/joyent/node
+
+Mozilla tests source is official Mozilla repo
 
 
 ## Todo
