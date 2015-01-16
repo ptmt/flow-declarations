@@ -6,13 +6,13 @@ flow-declarations
 An attempt to comprehend how https://github.com/facebook/flow declarations could be complete and well-tested.
 
 
-Try to convert Typescript declarations from (`src/typescript-interfaces`) into Flow format:
+To convert Typescript declarations from (`src/typescript-interfaces`) into Flow format:
 
 ```
 npm run generate
 ```
 
-Try to run tests (requires Flow version which supports `--no-flowlib` option):
+To run tests (requires Flow version which supports `--no-flowlib` option):
 
 ```
 npm run test
