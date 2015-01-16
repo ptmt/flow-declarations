@@ -236,7 +236,7 @@ function convertGenerics(lines) {
 */
 function convertOptionalMethods(lines) {
   lines = lines.map(function(line) {
-    return line.replace(/\?.\(/, '(');
+    return line.replace(/\?\s*\(/, '(');
   })
   return lines;
 }
@@ -344,6 +344,8 @@ function extractClassesInModules(lines) {
     }
   });
 
+  console.error(moduleNames);
+
   // 2. search&replace needed modules like
   //    module_name.className -> module_name$className
 
@@ -363,7 +365,9 @@ function extractClassesInModules(lines) {
     return line;
   });
 
-  // 3. copypaste class by searching it
+  console.error(classNames);
+
+  // 3. copypaste class by searching it in modules
   for (var className in classNames) {
     var moduleLines = searchByPattern(lines, 'declare module .*' + classNames[className][1]);
     //console.log('moduleLines', className, ' -- ', classNames[className][1]);

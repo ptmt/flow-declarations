@@ -1,3 +1,4 @@
+/* @flow */
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -46,6 +47,7 @@ console.error('repl test');
 invoke_me = function(arg) {
   return 'invoked ' + arg;
 };
+
 
 function send_expect(list) {
   if (list.length > 0) {

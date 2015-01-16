@@ -146,7 +146,7 @@ interface NodeProcess extends EventEmitter {
     kill(pid: number, signal?: string): void;
     memoryUsage(): any;
     pid: number;
-    title: stringd;
+    title: string;
     arch: string;
     platform: string;
     nextTick(callback: Function): void;
