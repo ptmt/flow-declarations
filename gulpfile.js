@@ -66,7 +66,6 @@ function scripts(watch) {
 	})
 
 	var rebundle = function() {
-		console.log('rebundle');
 		return fixPipe(bundler
 				.bundle()
 				.pipe(source('app.js')))
@@ -89,12 +88,12 @@ function scripts(watch) {
 
 // Scripts
 gulp.task('scripts', function() {
-	return scripts(false)
+	return scripts(false);
 });
 
 // Scripts
 gulp.task('scripts:watch', function() {
-	return scripts(true)
+	return scripts(true);
 });
 
 // HTML
@@ -190,11 +189,6 @@ gulp.task('server:restart', ['flow'], function() {
 	$.developServer.changed(function(error) {
 		if (!error) $.livereload.changed();
 	});
-	// gulp.src('./app/server.compiled/app.js')
-	//   .pipe($.developServer({
-	//     path: './app/server.compiled/index.js'
-	//   }))
-	//   .pipe($.livereload());
 });
 
 // Watch
@@ -214,7 +208,7 @@ gulp.task('watch', ['html', 'bundle', 'server:start'], function() {
 	gulp.watch('app/less/*.less', ['less']);
 
 	// Watch client .js files
-	gulp.watch('app/client/**/*.js', ['client-flow']);
+	//dgulp.watch('app/client/**/*.js', ['client-flow']);
 
 	// Watch image files
 	gulp.watch('app/images/**/*', ['images']);

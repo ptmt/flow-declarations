@@ -3,6 +3,7 @@ var React = require('react');
 var mui = require('material-ui');
 var request = require('../request');
 var Spinner = require('./spinner.react');
+var Code = require('./code.react');
 
 var Input = mui.Input;
 var Paper = mui.Paper;
@@ -16,13 +17,13 @@ var ToolbarGroup = mui.ToolbarGroup;
 var Main = React.createClass({
 
   getInitialState: function() {
-    return { source: '', loading: false};
+    return { source: '', loading: false, target: ''};
   },
 
   updateOutput: function(sourceCode) {
-    this.setState ({ loading: true});
+    this.setState ({ loading: true, target: this.state.target});
     request.post('/flow_check', {source: sourceCode }, (err, res) => {
-      this.setState ({ loading: false});
+      this.setState ({ loading: false, target: res});
       console.log(err);
     });
   },
@@ -41,6 +42,8 @@ var Main = React.createClass({
       { payload: '1', text: 'Download' },
       { payload: '2', text: 'More Info' }
       ];
+
+    var defaultValue = "function length (a) {\n  return a.length;\n}\na(1);"
 
     return (
       <div>
@@ -61,12 +64,14 @@ var Main = React.createClass({
 
         <div className="raw-code-area">
           <Paper zDepth={5} >
-            <Input className="textarea" ref="phones" multiline={true} type="text" name="source" placeholder="Javascript" onChange={this._onChange} onKeyDown={this._onKeyDown} description="start writing javascript code here" />
+            <Input className="textarea" ref="phones" multiline={true}
+              type="text" name="source" placeholder="Javascript" onChange={this._onChange}
+              onKeyDown={this._onKeyDown} defaultValue={defaultValue} description="start writing javascript code here" />
           </Paper>
         </div>
         <div className="output-area">
           <Paper zDepth={5} >
-            <Input className="textarea"  ref="phones" multiline={true} type="text" name="phones" placeholder="Your js code" description="start writing javascript code here" />
+            <Code html={this.state.target} placeholder="Compiled Javascript"/>
           </Paper>
         </div>
 
@@ -81,7 +86,7 @@ var Main = React.createClass({
     clearTimeout(this.timeout);
     this.timeout = setTimeout(() => {
       this.updateOutput(value);
-    }, 2000);
+    }, 3000);
   },
 
   _handleTouchTap: function() {
